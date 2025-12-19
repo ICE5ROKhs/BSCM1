@@ -1,0 +1,11 @@
+D:\软创\backend\src\main\java\com\bscm\config\SecurityConfig.java
+D:\软创\backend\src\main\java\com\bscm\entity\User.java
+D:\软创\backend\src\main\java\com\bscm\BscmApplication.java
+D:\软创\backend\src\main\java\com\bscm\entity\DiagnosisRecord.java
+D:\软创\backend\src\main\java\com\bscm\controller\DiagnosisController.java
+D:\软创\backend\src\main\java\com\bscm\service\DiagnosisService.java
+D:\软创\backend\src\main\java\com\bscm\config\WebConfig.java
+D:\软创\backend\src\main\java\com\bscm\service\impl\DiagnosisServiceImpl.java
+D:\软创\backend\src\main\java\com\bscm\repository\DiagnosisRecordRepository.java
+D:\软创\backend\src\main\java\com\bscm\common\Result.java
+D:\软创\backend\src\main\java\com\bscm\repository\UserRepository.java

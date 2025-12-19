@@ -1,0 +1,11 @@
+com\bscm\service\DiagnosisService.class
+com\bscm\repository\DiagnosisRecordRepository.class
+com\bscm\common\Result.class
+com\bscm\repository\UserRepository.class
+com\bscm\entity\User.class
+com\bscm\BscmApplication.class
+com\bscm\entity\DiagnosisRecord.class
+com\bscm\service\impl\DiagnosisServiceImpl.class
+com\bscm\config\SecurityConfig.class
+com\bscm\config\WebConfig.class
+com\bscm\controller\DiagnosisController.class

@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: bscm-backend
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bscm_db
+    username: bscm
+    # 本地开发默认密码：bscm123456（可通过环境变量 BSCM_DB_PASSWORD 覆盖）
+    password: ${BSCM_DB_PASSWORD:bscm123456}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# JWT配置
+jwt:
+  secret: bscm-secret-key-change-in-production
+  expiration: 86400000 # 24小时
+
+# 文件上传路径
+file:
+  upload-dir: ./uploads
+
+logging:
+  level:
+    com.bscm: DEBUG
+    org.springframework.web: INFO
+
