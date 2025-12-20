@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserService {
       user.setPassword(passwordEncoder.encode(password));
       // 设置默认用户名（使用手机号作为默认用户名）
       user.setUsername(phone);
+      user.setRole("USER"); // 设置默认角色
 
       User savedUser = userRepository.save(user);
       log.info("用户注册成功，用户ID: {}, 手机号: {}", savedUser.getId(), maskPhone(phone));
@@ -105,6 +106,86 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public User loginByCode(String phone, String verificationCode) {
+    log.debug("开始验证码登录流程，手机号: {}", maskPhone(phone));
+
+    // 参数验证
+    if (phone == null || phone.trim().isEmpty()) {
+      throw new BusinessException("手机号不能为空");
+    }
+
+    if (verificationCode == null || verificationCode.trim().isEmpty()) {
+      throw new BusinessException("验证码不能为空");
+    }
+
+    // 验证验证码
+    if (!verificationCodeService.verifyCode(phone, verificationCode)) {
+      log.warn("验证码登录失败：验证码错误或已过期，手机号: {}", maskPhone(phone));
+      throw new BusinessException("验证码错误或已过期");
+    }
+
+    // 查找用户，如果不存在则创建
+    User user = userRepository.findByPhone(phone).orElse(null);
+    if (user == null) {
+      log.info("验证码登录时用户不存在，自动创建用户，手机号: {}", maskPhone(phone));
+      user = new User();
+      user.setPhone(phone);
+      user.setUsername(phone);
+      user.setPassword(passwordEncoder.encode("")); // 设置空密码，验证码登录不需要密码
+      user.setRole("USER"); // 设置默认角色
+      user = userRepository.save(user);
+    }
+
+    log.info("验证码登录成功，用户ID: {}, 手机号: {}", user.getId(), maskPhone(phone));
+    return user;
+  }
+
+  @Override
+  @Transactional
+  public void resetPassword(String phone, String newPassword, String verificationCode) {
+    log.debug("开始重置密码流程，手机号: {}", maskPhone(phone));
+
+    // 参数验证
+    if (phone == null || phone.trim().isEmpty()) {
+      throw new BusinessException("手机号不能为空");
+    }
+
+    if (newPassword == null || newPassword.trim().isEmpty()) {
+      throw new BusinessException("新密码不能为空");
+    }
+
+    if (newPassword.length() < 6) {
+      throw new BusinessException("密码长度不能少于6位");
+    }
+
+    if (verificationCode == null || verificationCode.trim().isEmpty()) {
+      throw new BusinessException("验证码不能为空");
+    }
+
+    // 验证验证码
+    if (!verificationCodeService.verifyCode(phone, verificationCode)) {
+      log.warn("重置密码失败：验证码错误或已过期，手机号: {}", maskPhone(phone));
+      throw new BusinessException("验证码错误或已过期");
+    }
+
+    // 查找用户
+    User user =
+        userRepository
+            .findByPhone(phone)
+            .orElseThrow(
+                () -> {
+                  log.warn("重置密码失败：用户不存在，手机号: {}", maskPhone(phone));
+                  return new BusinessException("用户不存在");
+                });
+
+    // 更新密码
+    user.setPassword(passwordEncoder.encode(newPassword));
+    userRepository.save(user);
+
+    log.info("密码重置成功，用户ID: {}, 手机号: {}", user.getId(), maskPhone(phone));
+  }
+
+  @Override
   public User findByPhone(String phone) {
     if (phone == null || phone.trim().isEmpty()) {
       throw new BusinessException("手机号不能为空");
@@ -139,6 +220,7 @@ public class UserServiceImpl implements UserService {
       user.setPassword(passwordEncoder.encode(password));
       // 设置默认用户名（使用手机号作为默认用户名）
       user.setUsername(phone);
+      user.setRole("USER"); // 设置默认角色
 
       User savedUser = userRepository.save(user);
       log.info("用户创建成功，用户ID: {}, 手机号: {}", savedUser.getId(), maskPhone(phone));

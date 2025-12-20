@@ -10,6 +10,12 @@ public interface UserService {
   /** 用户登录 */
   User login(String phone, String password);
 
+  /** 验证码登录 */
+  User loginByCode(String phone, String verificationCode);
+
+  /** 重置密码 */
+  void resetPassword(String phone, String newPassword, String verificationCode);
+
   /** 根据手机号查找用户 */
   User findByPhone(String phone);
 

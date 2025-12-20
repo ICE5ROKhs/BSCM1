@@ -67,10 +67,19 @@ export const authApi = {
     });
   },
 
-  // 一键登录（验证码登录）
+  // 验证码登录
   quickLogin: async (phone, verificationCode) => {
     return await api.post("/auth/quick-login", {
       phone,
+      verificationCode,
+    });
+  },
+
+  // 重置密码（忘记密码）
+  resetPassword: async (phone, newPassword, verificationCode) => {
+    return await api.post("/auth/reset-password", {
+      phone,
+      newPassword,
       verificationCode,
     });
   },

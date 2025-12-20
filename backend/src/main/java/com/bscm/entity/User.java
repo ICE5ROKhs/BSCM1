@@ -26,7 +26,7 @@ public class User {
   @Column(name = "phone", length = 20)
   private String phone;
 
-  @Column(name = "role", nullable = false, length = 20)
+  @Column(name = "role", nullable = true, length = 20)
   private String role;
 
   @Column(name = "created_at", nullable = false, updatable = false)
