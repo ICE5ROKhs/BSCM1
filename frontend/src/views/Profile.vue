@@ -17,13 +17,6 @@
                 placeholder="请输入用户名"
               />
             </el-form-item>
-            <el-form-item label="邮箱">
-              <el-input
-                v-model="userInfo.email"
-                type="email"
-                placeholder="请输入邮箱"
-              />
-            </el-form-item>
             <el-form-item label="手机号">
               <el-input
                 v-model="userInfo.phone"
@@ -57,7 +50,6 @@ const router = useRouter();
 const userStore = useUserStore();
 const userInfo = ref({
   username: "",
-  email: "",
   phone: "",
 });
 
@@ -71,7 +63,6 @@ onMounted(() => {
   if (userStore.userInfo) {
     userInfo.value = {
       username: userStore.userInfo.username || "",
-      email: userStore.userInfo.email || "",
       phone: userStore.userInfo.phone || "",
     };
   }

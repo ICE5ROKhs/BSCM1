@@ -64,12 +64,13 @@ const goToDiagnosis = () => {
   color: white;
   padding: 0;
   box-shadow: 0 2px 12px var(--shadow-color);
+  height: 100%;
 }
 
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 16px 12px;
   text-align: center;
 }
 
@@ -172,7 +173,7 @@ const goToDiagnosis = () => {
 
 @media screen and (max-width: 768px) {
   .header-content {
-    padding: 24px 16px;
+    padding: 0px 0px;
   }
 
   .header-content h1 {

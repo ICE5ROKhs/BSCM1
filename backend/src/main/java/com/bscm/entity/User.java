@@ -20,9 +20,6 @@ public class User {
   @Column(name = "username", length = 50)
   private String username;
 
-  @Column(name = "email", length = 100)
-  private String email;
-
   @Column(name = "password", nullable = false)
   private String password;
 

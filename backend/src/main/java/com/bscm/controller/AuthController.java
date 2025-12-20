@@ -68,7 +68,34 @@ public class AuthController {
   /** 用户注册 */
   @PostMapping("/register")
   public Result<Map<String, Object>> register(@RequestBody RegisterRequest request) {
+    String phone = request != null ? request.getPhone() : null;
+    String maskedPhone = maskPhone(phone);
+
+    log.debug("收到注册请求，手机号: {}", maskedPhone);
+
     try {
+      // 参数验证
+      if (request == null) {
+        log.warn("注册请求体为空");
+        return Result.error("请求参数不能为空");
+      }
+
+      if (phone == null || phone.trim().isEmpty()) {
+        log.warn("注册时手机号为空");
+        return Result.error("手机号不能为空");
+      }
+
+      if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+        log.warn("注册时密码为空，手机号: {}", maskedPhone);
+        return Result.error("密码不能为空");
+      }
+
+      if (request.getVerificationCode() == null || request.getVerificationCode().trim().isEmpty()) {
+        log.warn("注册时验证码为空，手机号: {}", maskedPhone);
+        return Result.error("验证码不能为空");
+      }
+
+      // 调用服务层进行注册（业务异常会被全局异常处理器捕获）
       User user =
           userService.register(
               request.getPhone(), request.getPassword(), request.getVerificationCode());
@@ -84,19 +111,44 @@ public class AuthController {
               "id", user.getId(),
               "phone", user.getPhone()));
 
-      businessLogger.logUserOperation("用户注册", user.getId(), "手机号: " + maskPhone(user.getPhone()));
+      businessLogger.logUserOperation("用户注册", user.getId(), "手机号: " + maskedPhone);
+      log.info("用户注册成功，用户ID: {}, 手机号: {}", user.getId(), maskedPhone);
 
       return Result.success(data);
     } catch (Exception e) {
-      businessLogger.logBusinessError("用户注册失败", "手机号: " + maskPhone(request.getPhone()), e);
-      return Result.error("注册失败: " + e.getMessage());
+      // 这里捕获的是未预期的异常，业务异常会被全局异常处理器处理
+      log.error("用户注册异常，手机号: {}", maskedPhone, e);
+      businessLogger.logBusinessError("用户注册失败", "手机号: " + maskedPhone, e);
+      return Result.error("注册失败，请稍后重试");
     }
   }
 
   /** 用户登录 */
   @PostMapping("/login")
   public Result<Map<String, Object>> login(@RequestBody LoginRequest request) {
+    String phone = request != null ? request.getPhone() : null;
+    String maskedPhone = maskPhone(phone);
+
+    log.debug("收到登录请求，手机号: {}", maskedPhone);
+
     try {
+      // 参数验证
+      if (request == null) {
+        log.warn("登录请求体为空");
+        return Result.error("请求参数不能为空");
+      }
+
+      if (phone == null || phone.trim().isEmpty()) {
+        log.warn("登录时手机号为空");
+        return Result.error("手机号不能为空");
+      }
+
+      if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+        log.warn("登录时密码为空，手机号: {}", maskedPhone);
+        return Result.error("密码不能为空");
+      }
+
+      // 调用服务层进行登录（业务异常会被全局异常处理器捕获）
       User user = userService.login(request.getPhone(), request.getPassword());
 
       // 生成JWT token
@@ -110,13 +162,16 @@ public class AuthController {
               "id", user.getId(),
               "phone", user.getPhone()));
 
-      businessLogger.logUserOperation("用户登录", user.getId(), "手机号: " + maskPhone(user.getPhone()));
+      businessLogger.logUserOperation("用户登录", user.getId(), "手机号: " + maskedPhone);
+      log.info("用户登录成功，用户ID: {}, 手机号: {}", user.getId(), maskedPhone);
 
       return Result.success(data);
     } catch (Exception e) {
+      // 这里捕获的是未预期的异常，业务异常会被全局异常处理器处理
+      log.error("用户登录异常，手机号: {}", maskedPhone, e);
       businessLogger.logBusinessWarning(
-          "用户登录失败", "手机号: " + maskPhone(request.getPhone()) + ", 原因: " + e.getMessage());
-      return Result.error("登录失败: " + e.getMessage());
+          "用户登录失败", "手机号: " + maskedPhone + ", 原因: " + e.getMessage());
+      return Result.error("登录失败，请稍后重试");
     }
   }
 
