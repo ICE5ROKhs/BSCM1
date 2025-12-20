@@ -34,17 +34,18 @@
               <template #prefix>
                 <el-icon><Message /></el-icon>
               </template>
-              <template #suffix>
-                <el-button
-                  size="small"
-                  type="primary"
-                  :disabled="codeCountdown > 0"
-                  @click="sendCode"
-                >
-                  {{ codeCountdown > 0 ? `${codeCountdown}秒` : "发送验证码" }}
-                </el-button>
-              </template>
             </el-input>
+            <el-button
+              link
+              type="primary"
+              :disabled="codeCountdown > 0"
+              @click="sendCode"
+              style="margin-top: 8px; padding: 0"
+            >
+              {{
+                codeCountdown > 0 ? `${codeCountdown}秒后重试` : "获取验证码"
+              }}
+            </el-button>
           </el-form-item>
 
           <el-form-item prop="password">

@@ -100,21 +100,21 @@
                   <template #prefix>
                     <el-icon><Message /></el-icon>
                   </template>
-                  <template #suffix>
-                    <el-button
-                      link
-                      type="primary"
-                      :disabled="codeCountdown > 0"
-                      @click="sendCode('code')"
-                    >
-                      {{
-                        codeCountdown > 0
-                          ? `${codeCountdown}秒后重试`
-                          : "获取验证码"
-                      }}
-                    </el-button>
-                  </template>
                 </el-input>
+                <el-button
+                  link
+                  type="primary"
+                  :disabled="codeCountdown > 0"
+                  @click="sendCode('code')"
+                  class="code-button"
+                  style="margin-top: 8px; padding: 0"
+                >
+                  {{
+                    codeCountdown > 0
+                      ? `${codeCountdown}秒后重试`
+                      : "获取验证码"
+                  }}
+                </el-button>
               </el-form-item>
 
               <el-form-item>
@@ -153,7 +153,7 @@
         :model="forgotPasswordForm"
         :rules="forgotPasswordRules"
         ref="forgotPasswordFormRef"
-        label-width="100px"
+        label-width="0"
       >
         <el-form-item label="手机号" prop="phone">
           <el-input
@@ -180,21 +180,21 @@
             <template #prefix>
               <el-icon><Message /></el-icon>
             </template>
-            <template #suffix>
-              <el-button
-                link
-                type="primary"
-                :disabled="forgotPasswordCountdown > 0"
-                @click="sendCode('forgot')"
-              >
-                {{
-                  forgotPasswordCountdown > 0
-                    ? `${forgotPasswordCountdown}秒后重试`
-                    : "获取验证码"
-                }}
-              </el-button>
-            </template>
           </el-input>
+          <el-button
+            link
+            type="primary"
+            :disabled="forgotPasswordCountdown > 0"
+            @click="sendCode('forgot')"
+            class="code-button"
+            style="margin-top: 8px; padding: 0"
+          >
+            {{
+              forgotPasswordCountdown > 0
+                ? `${forgotPasswordCountdown}秒后重试`
+                : "获取验证码"
+            }}
+          </el-button>
         </el-form-item>
 
         <el-form-item label="新密码" prop="newPassword">
@@ -579,5 +579,38 @@ const goToRegister = () => {
   .form-options {
     font-size: 14px;
   }
+}
+
+/* 忘记密码对话框表单项左对齐 */
+:deep(.el-dialog) .el-form-item {
+  margin-bottom: 18px;
+}
+
+:deep(.el-dialog) .el-form-item__label {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 0 8px 0 !important;
+  text-align: left !important;
+  display: block;
+}
+
+:deep(.el-dialog) .el-form-item__content {
+  margin-left: 0 !important;
+  text-align: left;
+}
+
+/* 验证码按钮：默认隐藏文字，hover时显示 */
+.code-button {
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+  min-width: auto;
+}
+
+.code-button:hover {
+  opacity: 1;
+}
+
+.code-button.is-disabled {
+  opacity: 0.5;
 }
 </style>
