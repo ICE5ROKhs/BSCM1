@@ -9,6 +9,10 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 .mvn/wrapper/maven-wrapper.properties
 
+# Maven Spotless
+spotless-index
+spotless/
+
 # 编译文件
 *.class
 *.jar
@@ -16,6 +20,7 @@ target/
 *.ear
 *.nar
 hs_err_pid*
+rebel.xml
 
 # ========== Node.js / 前端 ==========
 # 依赖
@@ -34,6 +39,11 @@ dist/
 dist-ssr/
 build/
 *.local
+
+# Vite
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
 
 # ========== Spring Boot ==========
 # Spring Boot
@@ -77,6 +87,8 @@ nbdist/
 logs/
 *.log.*
 log/
+backend/logs/
+frontend/logs/
 
 # ========== 环境变量和配置 ==========
 .env
@@ -162,4 +174,39 @@ site/
 .DS_Store?
 .Spotlight-V100
 .Trashes
+
+# ========== Git ==========
+# Git 相关
+*.patch
+*.diff
+*.rej
+
+# ========== 安全相关 ==========
+# 密钥和证书
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+*.truststore
+secrets/
+*.secret
+
+# ========== 性能分析 ==========
+# Java 性能分析
+*.hprof
+*.prof
+
+# ========== 其他工具 ==========
+# Gradle (如果将来使用)
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# 备份文件
+*.backup
+*.old
+*.save
 

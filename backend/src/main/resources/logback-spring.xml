@@ -101,7 +101,7 @@
     </logger>
     
     <!-- 项目日志级别 -->
-    <logger name="com.bscm" level="INFO"/>
+    <logger name="com.bscm" level="DEBUG"/>
     
     <!-- Spring框架日志级别 -->
     <logger name="org.springframework" level="INFO"/>

@@ -10,11 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
   private final UserService userService;
@@ -25,13 +27,40 @@ public class AuthController {
   /** 发送验证码 */
   @PostMapping("/send-code")
   public Result<String> sendVerificationCode(@RequestBody SendCodeRequest request) {
+    String phone = request != null ? request.getPhone() : null;
+    String maskedPhone = maskPhone(phone);
+
+    log.debug("收到发送验证码请求，手机号: {}", maskedPhone);
+
     try {
-      String code = verificationCodeService.sendVerificationCode(request.getPhone());
-      businessLogger.logBusinessEvent("发送验证码", "手机号: " + maskPhone(request.getPhone()));
+      // 参数验证
+      if (request == null) {
+        log.warn("请求体为空");
+        return Result.error("请求参数不能为空");
+      }
+
+      if (phone == null || phone.trim().isEmpty()) {
+        log.warn("手机号为空");
+        return Result.error("手机号不能为空");
+      }
+
+      log.debug("开始调用验证码服务，手机号: {}", maskedPhone);
+
+      String code = verificationCodeService.sendVerificationCode(phone);
+
+      log.debug("验证码服务调用成功，手机号: {}", maskedPhone);
+      businessLogger.logBusinessEvent("发送验证码", "手机号: " + maskedPhone);
+
       // 开发环境返回验证码，生产环境返回null
       return Result.success("验证码已发送");
+    } catch (IllegalArgumentException e) {
+      log.error("发送验证码参数错误，手机号: {}, 错误: {}", maskedPhone, e.getMessage());
+      businessLogger.logBusinessError(
+          "发送验证码失败", "手机号: " + maskedPhone + ", 错误: " + e.getMessage(), e);
+      return Result.error("发送验证码失败: " + e.getMessage());
     } catch (Exception e) {
-      businessLogger.logBusinessError("发送验证码失败", "手机号: " + maskPhone(request.getPhone()), e);
+      log.error("发送验证码异常，手机号: {}", maskedPhone, e);
+      businessLogger.logBusinessError("发送验证码失败", "手机号: " + maskedPhone, e);
       return Result.error("发送验证码失败: " + e.getMessage());
     }
   }
