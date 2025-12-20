@@ -226,7 +226,103 @@ a:hover {
 .el-input__inner:focus,
 .el-textarea__inner:focus,
 .van-field__control:focus {
+  border-color: var(--primary-color) !important;
+}
+
+/* 输入框包装器焦点状态 */
+.el-input.is-focus .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+}
+
+/* 表单验证错误状态改为紫色 */
+.el-form-item.is-error .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+}
+
+.el-form-item.is-error .el-input__inner,
+.el-form-item.is-error .el-textarea__inner {
+  border-color: var(--primary-color) !important;
+}
+
+.el-form-item__error {
+  color: var(--primary-color) !important;
+}
+
+/* 输入框错误状态图标 */
+.el-input.is-error .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+}
+
+.el-input__validateIcon {
+  color: var(--primary-color) !important;
+}
+
+/* 确保所有输入框焦点状态使用紫色 */
+.el-input__wrapper:focus-within {
+  box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+}
+
+/* 输入框激活状态 */
+.el-input.is-active .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+}
+
+/* 文本域焦点和错误状态 */
+.el-textarea.is-focus .el-textarea__inner {
+  border-color: var(--primary-color) !important;
+}
+
+.el-textarea.is-error .el-textarea__inner {
+  border-color: var(--primary-color) !important;
+}
+
+/* 复选框选中状态改为紫色 */
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: var(--primary-color);
   border-color: var(--primary-color);
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner::after {
+  border-color: white;
+}
+
+.el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+  background-color: white;
+}
+
+.el-checkbox__input .el-checkbox__inner:hover {
+  border-color: var(--primary-color);
+}
+
+.el-checkbox__input.is-focus .el-checkbox__inner {
+  border-color: var(--primary-color);
+}
+
+/* 复选框标签文字颜色 */
+.el-checkbox__label {
+  color: var(--text-primary);
+}
+
+.el-checkbox.is-checked .el-checkbox__label {
+  color: var(--primary-color) !important;
+}
+
+.el-checkbox:hover .el-checkbox__label {
+  color: var(--primary-color);
+}
+
+/* 确保选中状态的标签文字使用紫色 */
+.el-checkbox__input.is-checked + .el-checkbox__label {
+  color: var(--primary-color) !important;
 }
 
 /* 表格样式 */
