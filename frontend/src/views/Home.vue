@@ -21,16 +21,52 @@
               <p class="hero-description">
                 采用最新的人工智能技术，结合专业医疗知识库，为您提供准确、快速的诊断建议
               </p>
-              <el-button
-                type="primary"
-                size="large"
-                class="hero-button"
-                @click="goToDiagnosis"
-              >
-                <el-icon><Document /></el-icon>
-                立即开始诊断
-              </el-button>
+              <div class="hero-buttons">
+                <el-button
+                  type="primary"
+                  size="large"
+                  class="hero-button"
+                  @click="goToDiagnosis"
+                >
+                  <el-icon><Document /></el-icon>
+                  立即开始诊断
+                </el-button>
+                <el-button
+                  type="primary"
+                  size="large"
+                  class="hero-button hero-button-chat"
+                  @click="goToChat"
+                >
+                  <el-icon><ChatLineRound /></el-icon>
+                  AI智能咨询
+                </el-button>
+              </div>
             </div>
+          </div>
+
+          <!-- 功能卡片区域 -->
+          <div class="feature-cards">
+            <el-card class="feature-card" @click="goToDiagnosis">
+              <div class="feature-icon">
+                <el-icon><Document /></el-icon>
+              </div>
+              <h3>智能诊断</h3>
+              <p>上传症状和影像，获取专业诊断建议</p>
+            </el-card>
+            <el-card class="feature-card" @click="goToChat">
+              <div class="feature-icon">
+                <el-icon><ChatLineRound /></el-icon>
+              </div>
+              <h3>AI咨询</h3>
+              <p>与AI助手对话，获取专业医疗建议</p>
+            </el-card>
+            <el-card class="feature-card" @click="goToHistory">
+              <div class="feature-icon">
+                <el-icon><Clock /></el-icon>
+              </div>
+              <h3>历史记录</h3>
+              <p>查看过往诊断记录和咨询历史</p>
+            </el-card>
           </div>
         </div>
         <!-- 个人页面内容 -->
@@ -64,7 +100,13 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { Document, House, User } from "@element-plus/icons-vue";
+import {
+  Document,
+  House,
+  User,
+  ChatLineRound,
+  Clock,
+} from "@element-plus/icons-vue";
 import ProfileTab from "./ProfileTab.vue";
 
 const router = useRouter();
@@ -72,6 +114,14 @@ const activeTab = ref("home");
 
 const goToDiagnosis = () => {
   router.push("/diagnosis");
+};
+
+const goToChat = () => {
+  router.push("/chat");
+};
+
+const goToHistory = () => {
+  router.push("/history");
 };
 </script>
 
@@ -210,6 +260,74 @@ const goToDiagnosis = () => {
   background-color: var(--primary-dark);
 }
 
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-button-chat {
+  background-color: white;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.hero-button-chat:hover {
+  background-color: var(--primary-lighter);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* 功能卡片区域 */
+.feature-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.feature-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow-color);
+  border-color: var(--primary-color);
+}
+
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  background: var(--primary-gradient-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: var(--primary-color);
+}
+
+.feature-card h3 {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
 /* 底部导航栏 */
 .bottom-nav {
   background: white;
@@ -324,8 +442,38 @@ const goToDiagnosis = () => {
     font-size: 14px;
   }
 
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
   .hero-button {
     width: 100%;
+  }
+
+  .feature-cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .feature-card {
+    padding: 24px 20px;
+  }
+
+  .feature-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .feature-card h3 {
+    font-size: 18px;
+  }
+
+  .feature-card p {
+    font-size: 13px;
   }
 
   .nav-icon {

@@ -1,5 +1,6 @@
 package com.bscm.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,12 +32,25 @@ public class SecurityConfig {
                 auth.requestMatchers("/auth/**")
                     .permitAll()
                     .requestMatchers("/diagnosis/**")
-                    .permitAll()
+                    .authenticated()
+                    .requestMatchers("/chat/**")
+                    .authenticated()
                     .anyRequest()
                     .authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling(
+            exception ->
+                exception.authenticationEntryPoint(
+                    (request, response, authException) -> {
+                      // 如果响应已经提交，不再处理
+                      if (response.isCommitted()) {
+                        return;
+                      }
+                      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                      response.getWriter().write("Unauthorized");
+                    }));
     return http.build();
   }
 }

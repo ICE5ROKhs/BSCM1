@@ -33,6 +33,11 @@ const routes = [
     name: "Profile",
     component: () => import("../views/Profile.vue"),
   },
+  {
+    path: "/chat",
+    name: "Chat",
+    component: () => import("../views/Chat.vue"),
+  },
 ];
 
 const router = createRouter({
