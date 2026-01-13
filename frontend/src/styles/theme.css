@@ -158,6 +158,21 @@
   color: var(--text-primary);
 }
 
+/* 成功消息提示框使用紫色系 */
+.el-message--success {
+  background-color: var(--primary-lighter);
+  border-color: var(--primary-color);
+  color: var(--primary-color) !important;
+}
+
+.el-message--success .el-message__icon {
+  color: var(--primary-color) !important;
+}
+
+.el-message--success .el-message__content {
+  color: var(--primary-color) !important;
+}
+
 .el-message-box__header {
   border-bottom-color: var(--border-color);
 }

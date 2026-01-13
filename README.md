@@ -342,6 +342,24 @@ curl -X POST http://localhost:8080/api/diagnosis/submit \
 
 ## 部署说明
 
+### Android 应用打包
+
+项目已配置为支持打包为 Android 应用。详细指南请参考 [ANDROID_BUILD.md](./ANDROID_BUILD.md)。
+
+快速开始：
+
+1. 安装依赖：`cd frontend && npm install`
+2. 配置后端 API 地址（编辑 `frontend/src/config/api.js` 或设置环境变量 `VITE_API_BASE_URL`）
+3. 构建并同步：`npm run cap:sync`
+4. 打开 Android Studio：`npm run cap:open:android`
+5. 在 Android Studio 中构建 APK/AAB
+
+或使用快速构建脚本：
+
+```powershell
+.\build-android.ps1
+```
+
 ### 前端部署
 
 1. 构建生产版本：

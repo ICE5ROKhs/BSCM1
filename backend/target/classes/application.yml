@@ -43,3 +43,15 @@ logging:
     com.bscm: DEBUG
     org.springframework.web: INFO
 
+# 阿里云短信配置
+# access-key-id 和 access-key-secret 优先从环境变量获取：
+# ALIBABA_CLOUD_ACCESS_KEY_ID 和 ALIBABA_CLOUD_ACCESS_KEY_SECRET
+# 如果环境变量未设置，则使用下面的配置值（仅用于开发环境）
+aliyun:
+  sms:
+    access-key-id: ${ALIBABA_CLOUD_ACCESS_KEY_ID:}
+    access-key-secret: ${ALIBABA_CLOUD_ACCESS_KEY_SECRET:}
+    sign-name: 青岛深度思维创意
+    template-code: SMS_329030094
+    region: cn-qingdao
+

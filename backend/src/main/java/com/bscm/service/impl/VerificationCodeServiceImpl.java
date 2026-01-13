@@ -2,6 +2,7 @@ package com.bscm.service.impl;
 
 import com.bscm.entity.VerificationCode;
 import com.bscm.repository.VerificationCodeRepository;
+import com.bscm.service.SmsService;
 import com.bscm.service.VerificationCodeService;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class VerificationCodeServiceImpl implements VerificationCodeService {
 
   private final VerificationCodeRepository verificationCodeRepository;
+  private final SmsService smsService;
   private final Random random = new Random();
 
   @Override
@@ -60,13 +62,20 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         throw new RuntimeException("保存验证码失败: " + e.getMessage(), e);
       }
 
-      // 这里应该调用短信服务发送验证码
-      // 为了演示，我们只在日志中输出
-      log.info("发送验证码到手机号 {}: {}", phone, code);
+      // 调用短信服务发送验证码
+      log.debug("准备调用短信服务发送验证码，手机号: {}", phone);
+      boolean sendSuccess = smsService.sendVerificationCode(phone, code);
+
+      if (!sendSuccess) {
+        log.error("短信发送失败，手机号: {}", phone);
+        throw new RuntimeException("短信发送失败，请稍后重试");
+      }
+
+      log.info("验证码发送成功，手机号: {}", phone);
       log.debug("验证码发送流程完成，手机号: {}", phone);
 
-      // 开发环境返回验证码，生产环境应该返回null
-      return code;
+      // 生产环境返回null，不返回验证码
+      return null;
     } catch (IllegalArgumentException e) {
       log.error("发送验证码参数错误，手机号: {}, 错误: {}", phone, e.getMessage());
       throw e;

@@ -90,6 +90,13 @@
             <version>2.15.1</version>
         </dependency>
 
+        <!-- 阿里云短信SDK -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibabacloud-dysmsapi20170525</artifactId>
+            <version>4.0.8</version>
+        </dependency>
+
         <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
