@@ -546,7 +546,13 @@ const handleSendMessage = async () => {
 
 // 返回
 const goBack = () => {
-  router.back();
+  // 如果是从搜索页面跳转过来的（有sessionId参数），返回到首页
+  // 否则使用浏览器历史返回
+  if (route.query.sessionId) {
+    router.push({ name: "Home" });
+  } else {
+    router.back();
+  }
 };
 
 onMounted(() => {
