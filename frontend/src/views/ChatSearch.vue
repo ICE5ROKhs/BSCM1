@@ -309,7 +309,7 @@ onMounted(() => {
 /* 搜索区域 */
 .search-main {
   flex: 1;
-  padding: 20px 16px;
+  padding: 20px;
   overflow-y: auto;
   background: #ededed;
 }
@@ -323,17 +323,30 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+.search-input :deep(.el-input__wrapper) {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: 2px solid rgba(150, 120, 217, 0.3);
+  border-radius: 12px;
+}
+
+.search-input :deep(.el-input__wrapper.is-focus) {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(150, 120, 217, 0.1) !important;
+}
+
 .search-input :deep(.el-input__inner) {
   height: 48px;
   font-size: 16px;
   border-radius: 12px;
-  border: 2px solid rgba(150, 120, 217, 0.3);
-  padding-left: 40px;
+  border: none;
+  background-color: transparent;
+  padding-left: 3%;
 }
 
 .search-input :deep(.el-input__inner:focus) {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(150, 120, 217, 0.1);
+  border: none;
+  box-shadow: none;
 }
 
 .search-input :deep(.el-input__prefix) {
@@ -366,19 +379,19 @@ onMounted(() => {
 }
 
 .result-item {
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid rgba(150, 120, 217, 0.15);
-  box-shadow: 0 2px 4px rgba(150, 120, 217, 0.08);
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .result-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(150, 120, 217, 0.15);
-  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px rgba(150, 120, 217, 0.15);
 }
 
 .result-header {
