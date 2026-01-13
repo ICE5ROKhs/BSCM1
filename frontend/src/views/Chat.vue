@@ -15,11 +15,12 @@
               />
               <span class="header-title">AI智能助手</span>
             </div>
-            <el-button circle @click="goBack" class="back-button">
-              <template #icon>
-                <ArrowLeft />
-              </template>
-            </el-button>
+            <!-- <el-button
+              @click="goBack"
+              class="back-button"
+            >
+              返回
+            </el-button> -->
           </div>
         </el-header>
 
@@ -143,29 +144,26 @@
       >
         <template #header>
           <div class="drawer-header">
-            <span>聊天历史</span>
             <div class="drawer-header-actions">
-              <el-button
-                circle
-                size="small"
-                @click="handleSearch"
-                class="drawer-action-button"
-              >
-                <template #icon>
-                  <Search />
-                </template>
-              </el-button>
-              <el-button
+              <!-- <el-button
                 :icon="Close"
                 circle
                 size="small"
                 @click="sidebarVisible = false"
                 class="drawer-action-button drawer-close-button"
-              />
+              /> -->
             </div>
           </div>
         </template>
         <div class="sidebar-content">
+          <el-button
+            type="primary"
+            class="new-chat-button"
+            @click="handleSearch"
+          >
+            <el-icon><Search /></el-icon>
+            <span>搜索</span>
+          </el-button>
           <el-button
             type="primary"
             class="new-chat-button"
@@ -214,9 +212,8 @@ import {
   Promotion,
   Plus,
   Menu,
-  ArrowLeft,
-  Search,
   Close,
+  Search,
 } from "@element-plus/icons-vue";
 import { aiChatApi } from "../api/chat";
 
@@ -530,6 +527,8 @@ watch(
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
 
 /* 头部左侧区域 */
@@ -559,15 +558,38 @@ watch(
 }
 
 .back-button {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: white;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
   margin-right: 3%;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  min-width: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .back-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: white !important;
+}
+
+.back-button:focus {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+/* 确保按钮文字显示 */
+.back-button :deep(span) {
+  color: white !important;
+  display: inline-block !important;
 }
 
 /* 抽屉头部 */
@@ -620,12 +642,17 @@ watch(
   background: var(--el-button-bg-color);
   border: 1px solid var(--el-button-border-color);
   color: var(--el-button-text-color);
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .drawer-action-button:hover {
   background: var(--el-button-hover-bg-color);
   border-color: var(--el-button-hover-border-color);
   color: var(--el-button-hover-text-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(150, 120, 217, 0.2);
 }
 
 /* 自定义关闭按钮特殊样式 */
@@ -638,15 +665,43 @@ watch(
 .sidebar-content {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 0;
+  padding: 8px 16px;
+}
+
+.sidebar-content > .new-chat-button {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .new-chat-button {
-  width: 100%;
-  margin-bottom: 16px;
-  padding: 12px;
-  font-size: 15px;
+  width: 100% !important;
+  margin: 0 !important;
+  margin-bottom: 10px !important;
+  padding: 8px 16px !important;
+  font-size: 14px !important;
   font-weight: 500;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  min-height: auto !important;
+  height: auto !important;
+}
+
+.new-chat-button:last-of-type {
+  margin-bottom: 10px !important;
+}
+
+.new-chat-button .el-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin: 0 !important;
+}
+
+.new-chat-button span {
+  flex-shrink: 0;
+  margin: 0 !important;
 }
 
 .session-item {
