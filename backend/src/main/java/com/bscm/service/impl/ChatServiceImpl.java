@@ -102,7 +102,7 @@ public class ChatServiceImpl implements ChatService {
       java.util.regex.Matcher matcher = pattern.matcher(trimmed);
       if (matcher.find()) {
         String topic = matcher.group(1);
-        if (topic != null && !topic.isEmpty() && topic.length() <= 50) {
+        if (topic != null && !topic.isEmpty() && topic.length() <= 25) {
           log.info("提取到话题主题: {}", topic);
           return topic;
         }

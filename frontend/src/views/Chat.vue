@@ -15,32 +15,27 @@
               />
               <span class="header-title">AI智能助手</span>
             </div>
-            <el-button
-              :icon="ArrowLeft"
-              circle
-              @click="goBack"
-              class="back-button"
-            />
+            <el-button circle @click="goBack" class="back-button">
+              <template #icon>
+                <ArrowLeft />
+              </template>
+            </el-button>
           </div>
         </el-header>
 
         <!-- 聊天消息区域 -->
         <el-main class="chat-main" ref="chatMainRef">
           <div class="chat-messages" ref="messagesContainerRef">
-            <!-- 欢迎消息 -->
-            <div
-              class="message-wrapper message-ai-wrapper"
-              v-if="messages.length === 0"
-            >
-              <div class="message-avatar">
-                <el-icon><Avatar /></el-icon>
-              </div>
-              <div class="message-bubble message-ai-bubble">
-                <div class="message-content">
-                  您好！我是AI智能诊断助手，专注于脑干海绵状血管畸形的诊断咨询。我可以为您提供专业的医疗建议和解答相关问题。请问有什么可以帮助您的吗？
+            <!-- 空状态打招呼提示 -->
+            <div v-if="messages.length === 0 && !isLoading" class="empty-state">
+              <div class="empty-state-content">
+                <div class="empty-state-icon">
+                  <el-icon><Avatar /></el-icon>
+                </div>
+                <div class="empty-state-text">
+                  您好！请问有什么可以帮助您的吗？
                 </div>
               </div>
-              <div class="message-time">{{ formatTime(Date.now()) }}</div>
             </div>
 
             <!-- 消息列表 -->
@@ -151,12 +146,15 @@
             <span>聊天历史</span>
             <div class="drawer-header-actions">
               <el-button
-                :icon="Search"
                 circle
                 size="small"
                 @click="handleSearch"
                 class="drawer-action-button"
-              />
+              >
+                <template #icon>
+                  <Search />
+                </template>
+              </el-button>
               <el-button
                 :icon="Close"
                 circle
@@ -185,7 +183,14 @@
               sidebarVisible = false;
             "
           >
-            <div class="session-title">{{ session.topic || "新对话" }}</div>
+            <el-tooltip
+              :content="session.topic || '新对话'"
+              placement="right"
+              :show-after="0"
+              :hide-after="0"
+            >
+              <div class="session-title">{{ session.topic || "新对话" }}</div>
+            </el-tooltip>
             <div class="session-time">
               {{ formatSessionTime(session.updatedAt) }}
             </div>
@@ -304,7 +309,7 @@ const loadSessionsFromLocal = () => {
 };
 
 // 更新当前会话
-const updateCurrentSession = (topic, newMessages) => {
+const updateCurrentSession = (topic, newMessages, shouldUpdateTime = true) => {
   const session = chatSessions.value.find(
     (s) => s.id === currentSessionId.value,
   );
@@ -313,9 +318,12 @@ const updateCurrentSession = (topic, newMessages) => {
       session.topic = topic;
     }
     session.messages = newMessages;
-    session.updatedAt = Date.now();
-    // 重新排序
-    chatSessions.value.sort((a, b) => b.updatedAt - a.updatedAt);
+    // 只有在发起对话时才更新时间
+    if (shouldUpdateTime) {
+      session.updatedAt = Date.now();
+      // 重新排序
+      chatSessions.value.sort((a, b) => b.updatedAt - a.updatedAt);
+    }
     saveSessionsToLocal();
   }
 };
@@ -403,7 +411,7 @@ const handleSendMessage = async () => {
       content:
         "你是一位专业的AI医疗诊断助手，专注于脑干海绵状血管畸形的诊断咨询。请用专业但易懂的语言回答问题，提供准确的医疗建议。如果问题超出你的专业范围，请如实告知。\n\n" +
         "重要：请在每次回复的最后，以JSON格式返回本次对话的话题主题，格式如下：\n" +
-        '{"topic": "话题主题，不超过20个字"}',
+        '{"topic": "话题主题，不超过20个字，要求非常简洁"}',
     };
 
     const chatMessages = [systemPrompt, ...recentMessages];
@@ -491,12 +499,12 @@ onMounted(() => {
   scrollToBottom();
 });
 
-// 监听消息变化，自动保存
+// 监听消息变化，自动保存（不更新时间，因为这只是加载历史消息）
 watch(
   () => messages.value,
   (newMessages) => {
     if (currentSessionId.value && newMessages.length > 0) {
-      updateCurrentSession(null, newMessages);
+      updateCurrentSession(null, newMessages, false);
     }
   },
   { deep: true },
@@ -542,7 +550,7 @@ watch(
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
   color: white;
-  margin-left: 1%;
+  margin-left: 3%;
 }
 
 .menu-button:hover {
@@ -554,7 +562,7 @@ watch(
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
   color: white;
-  margin-right: 1%;
+  margin-right: 3%;
 }
 
 .back-button:hover {
@@ -711,6 +719,47 @@ watch(
   overflow-y: auto;
   padding-bottom: 10px;
   scroll-behavior: smooth;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 空状态提示 - 居中显示 */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 600px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.empty-state-content {
+  text-align: center;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: var(--primary-gradient-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(150, 120, 217, 0.15);
+}
+
+.empty-state-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  padding: 0 20px;
 }
 
 /* 消息包装器 - 微信风格 */
@@ -999,6 +1048,24 @@ watch(
   .chat-input :deep(.el-textarea__inner) {
     font-size: 14px;
     padding: 10px;
+  }
+
+  .empty-state {
+    max-width: 90%;
+    padding: 0 16px;
+  }
+
+  .empty-state-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+
+  .empty-state-text {
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 0 10px;
   }
 }
 
