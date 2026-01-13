@@ -1,5 +1,6 @@
 package com.bscm.controller;
 
+import com.bscm.common.ChatResponse;
 import com.bscm.common.Result;
 import com.bscm.logging.BusinessLogger;
 import com.bscm.service.ChatService;
@@ -99,14 +100,14 @@ public class ChatController {
 
   /** 发送聊天消息（非流式响应） */
   @PostMapping("/message")
-  public Result<String> sendMessage(@RequestBody ChatRequest request) {
+  public Result<ChatResponse> sendMessage(@RequestBody ChatRequest request) {
     try {
       if (request == null || request.getMessages() == null || request.getMessages().isEmpty()) {
         return Result.error("消息不能为空");
       }
 
       List<Map<String, String>> messages = request.getMessages();
-      String response = chatService.sendMessage(messages);
+      ChatResponse response = chatService.sendMessage(messages);
 
       businessLogger.logBusinessEvent("AI聊天完成", "消息数: " + messages.size());
       return Result.success(response);

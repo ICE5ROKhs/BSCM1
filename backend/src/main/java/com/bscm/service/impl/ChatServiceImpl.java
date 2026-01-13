@@ -1,5 +1,6 @@
 package com.bscm.service.impl;
 
+import com.bscm.common.ChatResponse;
 import com.bscm.service.ChatService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,7 +37,7 @@ public class ChatServiceImpl implements ChatService {
   }
 
   @Override
-  public String sendMessage(List<Map<String, String>> messages) {
+  public ChatResponse sendMessage(List<Map<String, String>> messages) {
     try {
       Map<String, Object> requestBody = new HashMap<>();
       requestBody.put("model", CHAT_MODEL);
@@ -69,11 +70,51 @@ public class ChatServiceImpl implements ChatService {
       String content = jsonNode.path("choices").path(0).path("message").path("content").asText("");
 
       log.info("AI回复成功，内容长度: {}", content.length());
-      return content;
+
+      // 提取话题主题
+      String topic = extractTopic(content);
+      // 如果提取到话题主题，从内容中移除JSON格式的话题主题
+      if (topic != null) {
+        content = content.replaceAll("\\{\\s*\"topic\"\\s*:\\s*\"[^\"]+\"\\s*\\}\\s*$", "").trim();
+      }
+
+      return new ChatResponse(content, topic);
     } catch (Exception e) {
       log.error("发送聊天消息失败", e);
       throw new RuntimeException("发送消息失败: " + e.getMessage(), e);
     }
+  }
+
+  /** 从AI回复内容中提取话题主题 支持格式：{"topic": "话题主题"} */
+  private String extractTopic(String content) {
+    if (content == null || content.isEmpty()) {
+      return null;
+    }
+
+    try {
+      // 尝试从内容末尾提取JSON格式的话题主题
+      String trimmed = content.trim();
+      // 匹配 {"topic": "..."} 格式
+      java.util.regex.Pattern pattern =
+          java.util.regex.Pattern.compile(
+              "\\{\\s*\"topic\"\\s*:\\s*\"([^\"]+)\"\\s*\\}\\s*$",
+              java.util.regex.Pattern.CASE_INSENSITIVE);
+      java.util.regex.Matcher matcher = pattern.matcher(trimmed);
+      if (matcher.find()) {
+        String topic = matcher.group(1);
+        if (topic != null && !topic.isEmpty() && topic.length() <= 50) {
+          log.info("提取到话题主题: {}", topic);
+          return topic;
+        }
+      }
+
+      // 如果没有找到JSON格式，尝试从第一条用户消息中提取关键词作为话题
+      // 这里可以根据需要实现更复杂的提取逻辑
+    } catch (Exception e) {
+      log.debug("提取话题主题失败", e);
+    }
+
+    return null;
   }
 
   @Override

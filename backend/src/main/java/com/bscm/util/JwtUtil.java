@@ -8,10 +8,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class JwtUtil {
 
   @Value("${jwt.secret}")
@@ -60,8 +62,19 @@ public class JwtUtil {
   public boolean validateToken(String token) {
     try {
       Claims claims = getClaimsFromToken(token);
-      return !claims.getExpiration().before(new Date());
+      Date expiration = claims.getExpiration();
+      Date now = new Date();
+      boolean isValid = !expiration.before(now);
+
+      if (!isValid) {
+        log.warn("Token已过期，过期时间: {}, 当前时间: {}", expiration, now);
+      } else {
+        log.debug("Token验证成功，过期时间: {}", expiration);
+      }
+
+      return isValid;
     } catch (Exception e) {
+      log.error("Token验证失败: {}", e.getMessage(), e);
       return false;
     }
   }

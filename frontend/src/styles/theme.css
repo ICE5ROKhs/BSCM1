@@ -22,6 +22,19 @@
   --border-color: #e6d9f2;
   --shadow-color: rgba(150, 120, 217, 0.12);
   --shadow-hover: rgba(150, 120, 217, 0.2);
+
+  /* Element Plus Drawer 关闭按钮控制 */
+  --el-drawer-close-btn-display: none; /* 隐藏默认关闭按钮 */
+  --el-drawer-close-icon-display: none; /* 隐藏关闭图标 */
+}
+
+/* Element Plus Drawer 关闭按钮样式覆盖 */
+.el-drawer__close-btn {
+  display: var(--el-drawer-close-btn-display, none) !important;
+}
+
+.el-drawer__header .el-icon {
+  display: var(--el-drawer-close-icon-display, none) !important;
 }
 
 /* Element Plus 主题覆盖 */

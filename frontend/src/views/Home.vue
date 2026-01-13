@@ -7,9 +7,9 @@
             <div class="logo-icon">BSCM</div>
             <h1>AI智能诊断系统</h1>
           </div>
-          <div class="header-subtitle">
+          <!-- <div class="header-subtitle">
             基于先进AI技术，提供专业医疗诊断服务
-          </div>
+          </div> -->
         </div>
       </el-header>
       <el-main class="main-section">
@@ -17,12 +17,13 @@
         <div v-if="activeTab === 'home'" class="home-content">
           <div class="hero-section">
             <div class="hero-content">
-              <h2 class="hero-title">智能医疗诊断，让健康触手可及</h2>
+              <h2 class="hero-title">给你的健康，多一重智能守护</h2>
               <p class="hero-description">
-                采用最新的人工智能技术，结合专业医疗知识库，为您提供准确、快速的诊断建议
+                运用前沿人工智能科技，深度融合权威医疗知识库，<br />
+                为您提供精准、高效的专业诊疗分析
               </p>
               <div class="hero-buttons">
-                <el-button
+                <!-- <el-button
                   type="primary"
                   size="large"
                   class="hero-button"
@@ -30,7 +31,7 @@
                 >
                   <el-icon><Document /></el-icon>
                   立即开始诊断
-                </el-button>
+                </el-button> -->
                 <el-button
                   type="primary"
                   size="large"
@@ -46,13 +47,13 @@
 
           <!-- 功能卡片区域 -->
           <div class="feature-cards">
-            <el-card class="feature-card" @click="goToDiagnosis">
+            <!-- <el-card class="feature-card" @click="goToDiagnosis">
               <div class="feature-icon">
                 <el-icon><Document /></el-icon>
               </div>
               <h3>智能诊断</h3>
               <p>上传症状和影像，获取专业诊断建议</p>
-            </el-card>
+            </el-card> -->
             <el-card class="feature-card" @click="goToChat">
               <div class="feature-icon">
                 <el-icon><ChatLineRound /></el-icon>
@@ -60,13 +61,13 @@
               <h3>AI咨询</h3>
               <p>与AI助手对话，获取专业医疗建议</p>
             </el-card>
-            <el-card class="feature-card" @click="goToHistory">
+            <!-- <el-card class="feature-card" @click="goToHistory">
               <div class="feature-icon">
                 <el-icon><Clock /></el-icon>
               </div>
               <h3>历史记录</h3>
               <p>查看过往诊断记录和咨询历史</p>
-            </el-card>
+            </el-card> -->
           </div>
         </div>
         <!-- 个人页面内容 -->
