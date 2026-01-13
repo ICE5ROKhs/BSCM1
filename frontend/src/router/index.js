@@ -38,6 +38,11 @@ const routes = [
     name: "Chat",
     component: () => import("../views/Chat.vue"),
   },
+  {
+    path: "/chat/search",
+    name: "ChatSearch",
+    component: () => import("../views/ChatSearch.vue"),
+  },
 ];
 
 const router = createRouter({

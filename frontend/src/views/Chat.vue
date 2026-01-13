@@ -15,12 +15,7 @@
               />
               <span class="header-title">AI智能助手</span>
             </div>
-            <!-- <el-button
-              @click="goBack"
-              class="back-button"
-            >
-              返回
-            </el-button> -->
+            <el-button @click="goBack" class="back-button"> 返回 </el-button>
           </div>
         </el-header>
 
@@ -43,12 +38,14 @@
             <div
               v-for="(message, index) in messages"
               :key="index"
+              :ref="(el) => setMessageRef(el, index)"
               class="message-wrapper"
               :class="
                 message.role === 'user'
                   ? 'message-user-wrapper'
                   : 'message-ai-wrapper'
               "
+              :data-message-index="index"
             >
               <!-- AI消息：头像在左 -->
               <div class="message-avatar" v-if="message.role === 'assistant'">
@@ -204,7 +201,7 @@
 
 <script setup>
 import { ref, nextTick, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
 import {
   Avatar,
@@ -218,6 +215,7 @@ import {
 import { aiChatApi } from "../api/chat";
 
 const router = useRouter();
+const route = useRoute();
 
 const messages = ref([]);
 const inputMessage = ref("");
@@ -229,6 +227,9 @@ const messagesContainerRef = ref(null);
 const chatSessions = ref([]);
 const currentSessionId = ref(null);
 const sidebarVisible = ref(false);
+
+// 消息引用映射
+const messageRefs = ref({});
 
 // 生成新的会话ID
 const generateSessionId = () => {
@@ -258,8 +259,7 @@ const handleCreateNewChat = () => {
 
 // 处理搜索
 const handleSearch = () => {
-  // TODO: 实现搜索功能
-  ElMessage.info("搜索功能开发中");
+  router.push({ name: "ChatSearch" });
 };
 
 // 切换会话
@@ -360,6 +360,13 @@ const formatTime = (timestamp) => {
   return `${hours}:${minutes}`;
 };
 
+// 设置消息引用
+const setMessageRef = (el, index) => {
+  if (el) {
+    messageRefs.value[index] = el;
+  }
+};
+
 // 滚动到底部
 const scrollToBottom = () => {
   nextTick(() => {
@@ -368,6 +375,57 @@ const scrollToBottom = () => {
         messagesContainerRef.value.scrollHeight;
     }
   });
+};
+
+// 滚动到指定消息
+const scrollToMessage = (messageIndex) => {
+  nextTick(() => {
+    const messageEl = messageRefs.value[messageIndex];
+    if (messageEl && messagesContainerRef.value) {
+      const container = messagesContainerRef.value;
+      const messageTop = messageEl.offsetTop;
+      const containerHeight = container.clientHeight;
+      const scrollTop =
+        messageTop - containerHeight / 2 + messageEl.offsetHeight / 2;
+
+      container.scrollTo({
+        top: Math.max(0, scrollTop),
+        behavior: "smooth",
+      });
+
+      // 高亮显示该消息
+      messageEl.classList.add("message-highlight");
+      setTimeout(() => {
+        messageEl.classList.remove("message-highlight");
+      }, 2000);
+    }
+  });
+};
+
+// 处理路由参数
+const handleRouteParams = () => {
+  const { sessionId, messageIndex } = route.query;
+
+  if (sessionId) {
+    // 切换到指定会话
+    const session = chatSessions.value.find((s) => s.id === sessionId);
+    if (session) {
+      currentSessionId.value = sessionId;
+      messages.value = session.messages || [];
+
+      // 如果有消息索引，滚动到对应消息
+      if (messageIndex !== undefined) {
+        const index = parseInt(messageIndex);
+        if (!isNaN(index) && index >= 0 && index < messages.value.length) {
+          scrollToMessage(index);
+        } else {
+          scrollToBottom();
+        }
+      } else {
+        scrollToBottom();
+      }
+    }
+  }
 };
 
 // 发送消息
@@ -493,8 +551,25 @@ const goBack = () => {
 
 onMounted(() => {
   loadSessionsFromLocal();
-  scrollToBottom();
+
+  // 处理路由参数（从搜索页面跳转过来）
+  nextTick(() => {
+    handleRouteParams();
+    // 如果没有路由参数，滚动到底部
+    if (!route.query.sessionId) {
+      scrollToBottom();
+    }
+  });
 });
+
+// 监听路由变化
+watch(
+  () => route.query,
+  () => {
+    handleRouteParams();
+  },
+  { deep: true },
+);
 
 // 监听消息变化，自动保存（不更新时间，因为这只是加载历史消息）
 watch(
@@ -510,15 +585,23 @@ watch(
 
 <style scoped>
 .chat {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: #ededed;
 }
 
 .chat-layout {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: row;
   background: #ededed;
+  overflow: hidden;
+}
+
+/* 覆盖 Element Plus el-container 的默认样式 */
+.chat-layout :deep(.el-container) {
+  height: 100%;
+  overflow: hidden;
 }
 
 /* 头部内容区域 */
@@ -747,7 +830,8 @@ watch(
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* 头部 */
@@ -767,16 +851,29 @@ watch(
   padding: 10px 16px;
   overflow: hidden;
   background: #ededed;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 覆盖 Element Plus el-main 的默认样式 */
+.chat-main :deep(.el-main) {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-messages {
-  height: 100%;
+  flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-bottom: 10px;
   scroll-behavior: smooth;
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 /* 空状态提示 - 居中显示 */
@@ -932,6 +1029,26 @@ watch(
 
 .message-ai-bubble .message-content {
   color: var(--text-primary);
+}
+
+/* 消息高亮动画 */
+.message-wrapper.message-highlight {
+  animation: highlightMessage 2s ease-in-out;
+}
+
+@keyframes highlightMessage {
+  0% {
+    background: rgba(150, 120, 217, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    background: rgba(150, 120, 217, 0.5);
+    transform: scale(1.02);
+  }
+  100% {
+    background: transparent;
+    transform: scale(1);
+  }
 }
 
 /* 时间戳 - 显示在消息旁边，微信风格 */
