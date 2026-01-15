@@ -103,22 +103,60 @@ git clone <repository-url>
 cd BSCM
 ```
 
-### 2. 数据库配置
+### 2. 环境变量配置
 
-#### 方式一：使用 PowerShell 脚本（推荐）
+项目使用环境变量来管理敏感配置信息。在启动项目前，请先设置以下环境变量：
+
+#### Windows PowerShell（当前会话有效）
 
 ```powershell
-cd scripts
-.\pg_init_bscm.ps1
+# 数据库密码（可选，如果不设置则使用配置文件中的默认值）
+$env:BSCM_DB_PASSWORD
+
+# 阿里云短信服务 AccessKey ID（必需，用于发送验证码）
+$env:ALIBABA_CLOUD_ACCESS_KEY_ID
+
+# 阿里云短信服务 AccessKey Secret（必需，用于发送验证码）
+$env:ALIBABA_CLOUD_ACCESS_KEY_SECRET
 ```
 
-#### 方式二：手动配置
+#### Windows 永久设置（系统环境变量）
 
-1. 启动 PostgreSQL 服务
+1. 右键"此电脑" -> "属性" -> "高级系统设置" -> "环境变量"
+2. 在"用户变量"或"系统变量"中添加：
+   - `BSCM_DB_PASSWORD` 
+   - `ALIBABA_CLOUD_ACCESS_KEY_ID` 
+   - `ALIBABA_CLOUD_ACCESS_KEY_SECRET` 
 
-2. 创建数据库和用户：
+
+**注意**：环境变量设置后需要重新打开终端或重启 IDE 才能生效。
+
+#### 配置检查清单
+
+在继续之前，请确认以下环境变量已正确设置：
+
+- [ ] `BSCM_DB_PASSWORD`（可选，默认使用 `bscm123456`）
+- [ ] `ALIBABA_CLOUD_ACCESS_KEY_ID`（必需）
+- [ ] `ALIBABA_CLOUD_ACCESS_KEY_SECRET`（必需）
+
+验证方法（Windows PowerShell）：
+```powershell
+# 检查环境变量是否设置
+$env:BSCM_DB_PASSWORD
+$env:ALIBABA_CLOUD_ACCESS_KEY_ID
+$env:ALIBABA_CLOUD_ACCESS_KEY_SECRET
+```
+
+### 3. 数据库配置
+
+#### 手动配置步骤
+
+1. **启动 PostgreSQL 服务**
+
+2. **创建数据库和用户**：
 
 ```sql
+-- 连接到 PostgreSQL（使用 postgres 超级用户）
 -- 创建用户
 CREATE ROLE bscm LOGIN PASSWORD 'bscm123456';
 
@@ -129,19 +167,59 @@ CREATE DATABASE bscm_db OWNER bscm;
 GRANT ALL PRIVILEGES ON DATABASE bscm_db TO bscm;
 ```
 
-3. 修改后端配置（如需要）：
+3. **验证后端配置**
 
-编辑 `backend/src/main/resources/application.yml`：
+检查 `backend/src/main/resources/application.yml` 中的数据库配置：
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/bscm_db
+    url: jdbc:postgresql://127.0.0.1:5432/bscm_db
     username: bscm
-    password: ${BSCM_DB_PASSWORD:bscm123456}  # 可通过环境变量覆盖
+    # 优先从环境变量 BSCM_DB_PASSWORD 读取，如果未设置则使用默认值 bscm123456
+    password: ${BSCM_DB_PASSWORD:bscm123456}
+    driver-class-name: org.postgresql.Driver
 ```
 
-### 3. 启动后端服务
+**配置说明**：
+- 数据库地址：`127.0.0.1:5432`（本地 PostgreSQL）
+- 数据库名：`bscm_db`
+- 用户名：`bscm`
+- 密码：优先使用环境变量 `BSCM_DB_PASSWORD`，如果未设置则使用默认值 `bscm123456`
+
+### 4. 阿里云短信服务配置
+
+项目使用阿里云短信服务发送验证码。配置已内置在 `application.yml` 中，但敏感信息（AccessKey）优先从环境变量读取。
+
+#### 配置说明
+
+`backend/src/main/resources/application.yml` 中的短信配置：
+
+```yaml
+aliyun:
+  sms:
+    # AccessKey 优先从环境变量读取：
+    # ALIBABA_CLOUD_ACCESS_KEY_ID 和 ALIBABA_CLOUD_ACCESS_KEY_SECRET
+    # 如果环境变量未设置，则使用配置文件中的值（仅用于开发环境）
+    access-key-id: ALIBABA_CLOUD_ACCESS_KEY_I
+    access-key-secret: ALIBABA_CLOUD_ACCESS_KEY_SECRET
+    sign-name: 青岛深度思维创意
+    template-code: SMS_329030094
+    region: cn-qingdao
+```
+
+**重要提示**：
+- 代码会优先从环境变量 `ALIBABA_CLOUD_ACCESS_KEY_ID` 和 `ALIBABA_CLOUD_ACCESS_KEY_SECRET` 读取 AccessKey
+- 如果环境变量未设置，则使用配置文件中的值
+- **生产环境建议使用环境变量**，不要将敏感信息提交到代码仓库
+
+#### 验证配置
+
+启动后端服务后，查看日志确认配置是否正确加载：
+- 如果看到 "从环境变量 ALIBABA_CLOUD_ACCESS_KEY_ID 读取 AccessKeyId"，说明环境变量配置成功
+- 如果看到 "使用配置文件中的 AccessKeyId"，说明使用的是配置文件中的值
+
+### 5. 启动后端服务
 
 ```bash
 cd backend
@@ -159,7 +237,7 @@ start-backend.bat
 
 后端服务默认运行在：`http://localhost:8080`
 
-### 4. 启动前端服务
+### 6. 启动前端服务
 
 ```bash
 cd frontend
@@ -174,12 +252,14 @@ npm run dev
 start-frontend.bat
 ```
 
-前端服务默认运行在：`http://localhost:5173`
+前端服务默认运行在：`http://localhost:3000`（端口在 `vite.config.js` 中配置）
 
-### 5. 访问应用
+### 7. 访问应用
 
-- 前端地址: http://localhost:5173
+- 前端地址: http://localhost:3000（根据 `vite.config.js` 配置）
 - 后端 API: http://localhost:8080/api
+
+**注意**：前端开发服务器配置在 `frontend/vite.config.js` 中，默认端口为 3000，代理配置会自动将 `/api` 请求转发到后端 `http://localhost:8080`。
 
 ## 已实现功能
 
@@ -416,10 +496,28 @@ java -jar target/bscm-backend-1.0.0.jar
 
 ### 环境变量
 
-后端支持通过环境变量覆盖配置：
+后端支持通过环境变量覆盖配置，详细说明请参考[快速开始](#快速开始)章节中的"环境变量配置"部分。
 
-- `BSCM_DB_PASSWORD`: 数据库密码
-- `SPRING_PROFILES_ACTIVE`: Spring 配置文件（dev/prod）
+#### 必需的环境变量
+
+- `ALIBABA_CLOUD_ACCESS_KEY_ID`: 阿里云短信服务 AccessKey ID（必需，用于发送验证码）
+- `ALIBABA_CLOUD_ACCESS_KEY_SECRET`: 阿里云短信服务 AccessKey Secret（必需，用于发送验证码）
+
+#### 可选的环境变量
+
+- `BSCM_DB_PASSWORD`: 数据库密码（如果不设置，则使用配置文件中的默认值 `bscm123456`）
+- `SPRING_PROFILES_ACTIVE`: Spring 配置文件（dev/prod，可选）
+
+#### 配置优先级
+
+1. **环境变量**（最高优先级）
+2. **application.yml 配置文件**
+3. **默认值**（如果配置文件中也没有）
+
+**安全建议**：
+- 生产环境必须使用环境变量管理敏感信息
+- 不要将包含真实 AccessKey 的配置文件提交到代码仓库
+- 建议使用 `.env` 文件（如果使用 Spring Boot 的 spring-boot-dotenv 插件）或系统环境变量
 
 ## 开发规范
 
@@ -444,7 +542,11 @@ A: 检查 PostgreSQL 服务是否启动，数据库和用户是否已创建，�
 
 ### Q: 验证码发送失败？
 
-A: 当前版本验证码为模拟发送（开发环境会在日志中显示验证码），生产环境需要集成真实的短信服务。
+A: 请检查以下配置：
+1. 环境变量 `ALIBABA_CLOUD_ACCESS_KEY_ID` 和 `ALIBABA_CLOUD_ACCESS_KEY_SECRET` 是否已正确设置
+2. 阿里云 AccessKey 是否有效且有短信服务权限
+3. 短信签名和模板代码是否正确（当前配置：签名"青岛深度思维创意"，模板代码"SMS_329030094"）
+4. 查看后端日志确认配置是否正确加载
 
 ### Q: JWT Token 过期？
 
