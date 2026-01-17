@@ -149,7 +149,44 @@ $env:ALIBABA_CLOUD_ACCESS_KEY_SECRET
 
 ### 3. 数据库配置
 
-#### 手动配置步骤
+#### 方式一：使用自动化脚本（推荐）
+
+项目提供了自动化脚本来快速配置数据库：
+
+**Windows PowerShell:**
+```powershell
+cd scripts
+.\setup-database.ps1
+```
+
+**Windows 命令提示符:**
+```cmd
+cd scripts
+setup-database.bat
+```
+
+**脚本功能：**
+- ✅ 自动检查 PostgreSQL 安装和服务状态
+- ✅ 自动创建数据库用户 `bscm`
+- ✅ 自动创建数据库 `bscm_db`
+- ✅ 自动授予必要权限
+- ✅ 自动验证配置
+
+**脚本参数（可选）：**
+```powershell
+# 指定 postgres 用户密码
+.\setup-database.ps1 -PostgresPassword "你的postgres密码"
+
+# 指定 bscm 用户密码（默认：bscm123456）
+.\setup-database.ps1 -BscmPassword "自定义密码"
+
+# 指定数据库主机和端口
+.\setup-database.ps1 -DbHost "localhost" -Port 5432
+```
+
+#### 方式二：手动配置步骤
+
+如果自动化脚本无法使用，可以手动配置：
 
 1. **启动 PostgreSQL 服务**
 
