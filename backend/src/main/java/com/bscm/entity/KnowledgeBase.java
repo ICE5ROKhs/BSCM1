@@ -7,27 +7,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "knowledge_base")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class KnowledgeBase {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "username", unique = true, nullable = false, length = 50)
-  private String username;
+  @Column(name = "question", columnDefinition = "TEXT", nullable = false)
+  private String question;
 
-  @Column(name = "password", nullable = false)
-  private String password;
+  @Column(name = "answer", columnDefinition = "TEXT", nullable = false)
+  private String answer;
 
-  @Column(name = "phone", length = 20)
-  private String phone;
+  @Column(name = "type", nullable = false)
+  private Integer type; // 1=基础知识, 2=实际病例
 
-  @Column(name = "role", nullable = true, length = 20)
-  private String role;
+  @Column(name = "vector", columnDefinition = "TEXT")
+  private String vector; // 存储向量数据（JSON格式，1536维向量数组）
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
@@ -46,3 +46,4 @@ public class User {
     updatedAt = LocalDateTime.now();
   }
 }
+

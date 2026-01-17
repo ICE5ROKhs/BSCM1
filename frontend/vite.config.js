@@ -8,7 +8,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+    },
+    dedupe: ['vue', 'element-plus']
+  },
+  optimizeDeps: {
+    include: ['element-plus', '@element-plus/icons-vue']
   },
   server: {
     port: 3000,

@@ -61,6 +61,13 @@
               <h3>AI咨询</h3>
               <p>与AI助手对话，获取专业医疗建议</p>
             </el-card>
+            <el-card class="feature-card" @click="goToKnowledgeBase">
+              <div class="feature-icon">
+                <el-icon><Collection /></el-icon>
+              </div>
+              <h3>RAG知识库</h3>
+              <p>浏览专业知识库，了解脑干海绵状血管畸形</p>
+            </el-card>
             <!-- <el-card class="feature-card" @click="goToHistory">
               <div class="feature-icon">
                 <el-icon><Clock /></el-icon>
@@ -107,6 +114,7 @@ import {
   User,
   ChatLineRound,
   Clock,
+  Collection,
 } from "@element-plus/icons-vue";
 import ProfileTab from "./ProfileTab.vue";
 
@@ -123,6 +131,10 @@ const goToChat = () => {
 
 const goToHistory = () => {
   router.push("/history");
+};
+
+const goToKnowledgeBase = () => {
+  router.push("/knowledge-base");
 };
 </script>
 

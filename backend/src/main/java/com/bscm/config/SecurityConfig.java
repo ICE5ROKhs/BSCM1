@@ -31,6 +31,8 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers("/auth/**")
                     .permitAll()
+                    .requestMatchers("/api/**")
+                    .authenticated()
                     .requestMatchers("/diagnosis/**")
                     .authenticated()
                     .requestMatchers("/chat/**")

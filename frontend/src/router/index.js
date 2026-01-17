@@ -43,6 +43,11 @@ const routes = [
     name: "ChatSearch",
     component: () => import("../views/ChatSearch.vue"),
   },
+  {
+    path: "/knowledge-base",
+    name: "KnowledgeBase",
+    component: () => import("../views/KnowledgeBase.vue"),
+  },
 ];
 
 const router = createRouter({
