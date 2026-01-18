@@ -213,6 +213,7 @@ import {
   Search,
 } from "@element-plus/icons-vue";
 import { aiChatApi } from "../api/chat";
+import { ragApi } from "../api/rag";
 
 const router = useRouter();
 const route = useRoute();
@@ -503,6 +504,30 @@ const handleSendMessage = async () => {
     };
 
     const chatMessages = [systemPrompt, ...recentMessages];
+
+    // ===== RAG增强提示词测试：在控制台输出增强后的提示词 =====
+    try {
+      console.log("========================================");
+      console.log("【RAG增强提示词测试】");
+      console.log("原始用户问题:", message);
+      console.log("对话历史:", recentMessages);
+      console.log("----------------------------------------");
+
+      const ragResult = await ragApi.getEnhancedPrompt(message, recentMessages);
+      if (ragResult.code === 200) {
+        console.log("【RAG增强后的完整提示词】");
+        console.log("----------------------------------------");
+        console.log(ragResult.data);
+        console.log("========================================");
+      } else {
+        console.warn("RAG增强失败:", ragResult.message);
+        console.log("========================================");
+      }
+    } catch (error) {
+      console.warn("RAG增强测试失败（不影响正常聊天）:", error);
+      console.log("========================================");
+    }
+    // ===== RAG增强提示词测试结束 =====
 
     // 发送消息并获取回复
     try {
